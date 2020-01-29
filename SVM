@@ -1,0 +1,68 @@
+from sklearn import svm, datasets
+import numpy as np
+
+def createClusterData(N, k):
+    np.random.seed(1234)
+    pointsPerCluster = float(N)/k
+    X = []
+    y = []
+    for i in range(k):
+        incomeCentroid = np.random.uniform(2000.0, 20000.0)
+        ageCentroid = np.random.uniform(20.0, 70.0)
+        for j in range(int(pointsPerCluster)):
+            X.append([np.random.normal(incomeCentroid, 1000.0), np.random.normal(ageCentroid, 2.0)])
+            y.append(j)
+    X = np.array(X)
+    y = np.array(y)
+    return X, y
+
+
+
+
+%matplotlib inline
+from pylab import *
+from sklearn.preprocessing import MinMaxScaler
+
+(X, y) = createClusterData(100, 5)
+
+plt.figure(figsize=(8, 6))
+plt.scatter(X[:,0], X[:,1], c=y.astype(np.float))
+plt.show()
+
+
+
+
+# Now we'll use linear svc to partition our graph into clusters. 
+scaling = MinMaxScaler(feature_range=(-1, 1)).fit(X)
+X = scaling.transform(X)
+plt.figure(figsize=(8, 6))
+plt.scatter(X[:,0], X[:,1], c=y)
+plt.show()
+
+
+
+svc = svm.SVC(kernel='linear', C = 1.0).fit(X, y)
+# feature X, label y
+
+
+def plotPredctions(clf):
+# Forge a dencse grid of points to sample
+    xx, yy = np.meshgrid(np.arange(-1, 1, .001), np.arange(-1, 1, .001))
+    
+# Convert to numpy arrays
+    npx = xx.ravel()
+    npy = yy.ravel()
+    
+# Convert to a list of 2D  (income, age) points
+    samplePoints = np.c_[npx, npy]
+    
+# Generate predicted labels (cluster numbers) for each point
+    Z = clf.predict(samplePoints)
+   
+    plt.figure(figsize=(8, 6)) 
+    Z = Z.reshape(xx.shape) # Reshape results to match xx dimension
+    plt.contourf(xx, yy, Z, cmap=plt.cm.Paired, alpha=0.8)# Draw the contour
+    plt.scatter(X[:,0], X[:,1], c=y.astype(np.float))
+    plt.show()
+    
+plotPredctions(svc)
