@@ -1,0 +1,22 @@
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split, cross_val_score
+import  numpy as np
+from sklearn import svm
+
+
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.4, random_state=0)
+clf1 = svm.SVC(kernel='linear', C=1).fit(X_train, y_train)
+clf2 = svm.SVC(kernel='poly', C=1, gamma='auto').fit(X_train, y_train)
+clf.score(X_test, y_test)
+
+
+
+# iris.data is all the mesurement
+# iris.target is all the target and species
+# 5 training dataset
+score = cross_val_score(clf1, iris.data, iris.target, cv=5)
+score.mean()
+
+score = cross_val_score(clf2, iris.data, iris.target, cv=5)
+score.mean()
