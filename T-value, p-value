@@ -1,0 +1,9 @@
+import numpy as np
+from scipy import stats
+
+A = np.random.normal(25.0, 5.0, 1000)
+B = np.random.normal(26.0, 5.0, 1000)
+stats.ttest_ind(A, B)
+
+B = np.random.normal(30, 5.0, 1000)
+stats.ttest_ind(A, B)
