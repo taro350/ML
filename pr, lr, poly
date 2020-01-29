@@ -1,0 +1,83 @@
+import numpy as np
+from numpy import random
+import matplotlib.pyplot as plt
+from scipy import stats
+
+
+
+random.seed(0)
+
+totals={
+    10: 0,
+    20: 0,
+    30: 0,
+    40: 0,
+    50: 0,
+    60: 0,
+    70: 0
+}
+purchace={
+    10: 0,
+    20: 0,
+    30: 0,
+    40: 0,
+    50: 0,
+    60: 0,
+    70: 0
+}
+totalPurchase = 0
+
+for _ in range(10000):
+    ageDecade = random.choice([10, 20, 30, 40, 50, 60, 70])
+    purchaseProbability = float(ageDecade) / 100
+    totals[ageDecade] += 1
+    if (random.random() < purchaseProbability):
+        totalPurchase += 1
+        purchace[ageDecade] += 1
+        
+print(totals)
+print(purchace)
+print(totalPurchase)
+
+
+"P(E|F)"
+
+PE = float(totalPurchase) / 10000
+PF = float(totals[30]) / 10000
+PEF =  float(purchace[30]) / float(totals[30]) 
+result = (purchace[30]/10000) / PF
+
+"Linear regression"
+pagespeed = np.random.normal(3.0, 1.0, 100)
+purchaceAmount = 100 - (pagespeed + np.random.normal(0, 1.0, 100)) * 3
+plt.scatter(pagespeed, purchaceAmount)
+
+slope, intercept, r, p, residuals = stats.linregress(pagespeed, purchaceAmount)
+
+
+
+"Polynomial"
+np.random.seed(2)
+pagespeed = np.random.normal(3.0, 1.0, 100)
+purchaceAmount = np.random.normal(50.0, 100.0, 100) / pagespeed
+
+x = np.array(pagespeed)
+y = np.array(purchaceAmount)
+p4 = np.poly1d(np.polyfit(x, y, 4))
+
+xp = np.linspace(0, 7, 1000)
+plt.scatter(x, y)
+plt.plot(xp, p4(xp), c='r')
+plt.show()
+def predict(x):
+    return slope * x + intercept
+    
+    
+fitline = predict(pagespeed )
+
+plt.scatter(pagespeed, purchaceAmount)
+plt.xlabel = 'Weight'
+plt.ylable = "Size"
+plt.suptitle = 'Predict'
+plt.plot(pagespeed, fitline, c='r')
+plt.show()
