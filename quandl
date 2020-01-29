@@ -1,0 +1,5 @@
+import quandl
+raw_data = quandl.get("BATS/BATS_TSLA", authtoken="DGjeFp-yj69ZwNyccPo9")
+features = data[['Short Volume', 'Total Volume',]]
+mydata= features['Short Volume'] / features['Total Volume']
+mydata.head()
