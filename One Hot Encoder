@@ -3,15 +3,12 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
 data = pd.read_csv('C:/Users\Owner\Desktop\Python (by Jupyter)\csv\Citywide_Payroll_Data__Fiscal_Year_.csv')
 data['Base Salary'] = data['Base Salary'].replace({'\$': ''}, regex=True)
-
 data.iloc[:,6:9] = data.iloc[:,6:9].replace({'\<': ''}, regex=True)
 
 X = data.iloc[:,6:9]
 Y = data.iloc[:,9]
-
 x_tr, y_tr, X_tes, Y_tes = train_test_split(X, Y, test_size=0.25, random_state=45)
 
 series = x_tr['Leave Status as of June 30'].values
