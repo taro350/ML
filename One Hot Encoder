@@ -1,0 +1,69 @@
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+data = pd.read_csv('C:/Users\Owner\Desktop\Python (by Jupyter)\csv\Citywide_Payroll_Data__Fiscal_Year_.csv')
+data['Base Salary'] = data['Base Salary'].replace({'\$': ''}, regex=True)
+
+data.iloc[:,6:9] = data.iloc[:,6:9].replace({'\<': ''}, regex=True)
+
+X = data.iloc[:,6:9]
+Y = data.iloc[:,9]
+
+x_tr, y_tr, X_tes, Y_tes = train_test_split(X, Y, test_size=0.25, random_state=45)
+
+series = x_tr['Leave Status as of June 30'].values
+unique_values = list(pd.unique(series))
+
+series1 = x_tr['Work Location Borough'].values
+unique_values1 = pd.unique(series1.ravel())
+
+series2 = x_tr['Title Description'].values
+unique_values2 = pd.unique(series2.ravel())
+
+def strip(arr):
+    n_unique_values = []
+    for i in arr:
+        i = str(i).strip()
+        n_unique_values.append(i)
+    return n_unique_values
+    
+n_unique_values1 = strip(unique_values1)
+n_unique_values2 = strip(unique_values2)
+
+ohe = OneHotEncoder(categories=[n_unique_values1, n_unique_values2, unique_values], handle_unknown='ignore')
+X = [['MANHATTAN', 'OCCUPATIONAL THERAPIST', 'ACTIVE'],['QUEENS', 'F/T SR. SCHOOL LUNCH HELPER', 'CEASED']]
+ohe.fit(X)
+
+"""
+OneHotEncoder(categorical_features=None,
+              categories=[['RICHMOND', 'nan', 'MANHATTAN', 'MANHATTAN',
+                           'BROOKLYN', 'OTHER', 'QUEENS', 'BRONX', 'QUEENS',
+                           'BROOKLYN', 'ULSTER', 'WESTCHESTER', 'RICHMOND',
+                           'Bronx', 'BRONX', 'Queens', 'Manhattan', 'DELAWARE',
+                           'SULLIVAN', 'PUTNAM', 'GREENE', 'NASSAU', 'ALBANY',
+                           'SCHOHARIE', 'Richmond', 'DUTCHESS', 'WASHINGTON DC',
+                           'ORANGE'],
+                          ['OCCUPATION...
+                           'EMERGENCY PREPAREDNESS SPECIALIST',
+                           'PRECINCT COMMUNITY RELATIONS AIDE',
+                           'JOB TRAINING PARTICIPANT', 'CITY PLANNER',
+                           'CUNY OFFICE ASSISTANT', 'COLLEGE AIDE',
+                           'F/T SR. SCHOOL LUNCH HELPER',
+                           'HIGHER EDUCATION ASSISTANT', 'POLICE OFFICER', ...],
+                          ['ACTIVE', 'CEASED', 'SEASONAL', 'ON LEAVE',
+                           'ON SEPARATION LEAVE']],
+              drop=None, dtype=<class 'numpy.float64'>, handle_unknown='ignore',
+              n_values=None, sparse=True)
+"""
+
+
+ohe.transform([['SCHOHARIE', 'HIGHER EDUCATION ASSISTANT', 'ON LEAVE']]).toarray()
+
+"""
+array([[0., 0., 0., ..., 0., 1., 0.]])
+"""
+
+
