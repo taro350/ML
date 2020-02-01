@@ -1,0 +1,96 @@
+import numpy as np
+import sklearn as sl
+from sklearn.datasets import make_blobs
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+import pandas as pd
+import matplotlib.pyplot as plt
+
+n_train = 20  # samples for training
+n_test = 200  # samples for testing
+mean = 50  # how often to repeat classification
+feature_max = 75  # maximum number of features
+step = 4  # step size for the calculation
+
+def generater(n_samp, n_each_feature):
+    X, y = make_blobs(n_samples=n_samp, n_features=1, centers=[[-2], [2]])
+
+    if n_each_feature > 1:
+        X = np.hstack([X, np.random.randn(n_samp, n_each_feature - 1)])
+    return X, y
+
+class_list_1, class_list_2 = [], []
+score_clf1, score_clf2 = 0, 0
+
+n_features_range = range(1, feature_max + 1, step)
+
+for n_each_feature in n_features_range:
+    score_1, socre_2 = 0, 0
+    for _ in range(mean):
+        X, y = generater(n_train, n_each_feature)     
+        
+        clf1 = LinearDiscriminantAnalysis(solver= 'lsqr', shrinkage='auto').fit(X, y)
+        clf2 = LinearDiscriminantAnalysis(solver= 'lsqr', shrinkage=None).fit(X, y)
+        
+        X, y = generater(n_test, n_each_feature)
+        score_clf1 += clf1.score(X, y)
+        score_clf2 += clf2.score(X, y)
+        
+    class_list_1.append(score_clf1 / mean)
+    class_list_2.append(score_clf2 / mean)
+        
+
+ratio = np.array(n_features_range) / n_train
+
+plt.plot(ratio, class_list_1, linewidth=2, label='taro') 
+plt.plot(ratio, class_list_2, linewidth=2, label='tar') 
+
+plt.xlabel('This is a bunch of samples in weight')
+plt.ylabel('This is a size')
+
+plt.suptitle = 'todays topic'
+plt.show()
+
+
+
+
+--------------------------------------------------------------------
+
+
+def generate_data(n_sampl, n_features):
+    X, y = make_blobs(n_samples=n_sampl, n_features=1, centers=[[-2], [2]])
+    
+    if n_features > 1:
+        X = np.hstack([X, np.random.randn(n_sampl, n_features - 1)])
+    return X, y
+
+acc_clf1, acc_clf2 = [], []
+n_features_range = range(1, feature_max + 1, step)
+
+for n_features in n_features_range:
+    score_clf1, score_clf2 = 0, 0
+    for _ in range(mean):
+        X, y = generate_data(n_train, n_features)
+
+        clf1 = LinearDiscriminantAnalysis(solver='lsqr', shrinkage='auto').fit(X, y)
+        clf2 = LinearDiscriminantAnalysis(solver='lsqr', shrinkage=None).fit(X, y)
+
+        X, y = generate_data(n_test, n_features)
+        score_clf1 += clf1.score(X, y)
+        score_clf2 += clf2.score(X, y)
+
+    acc_clf1.append(score_clf1 / mean)
+    acc_clf2.append(score_clf2 / mean)
+
+features_samples_ratio = np.array(n_features_range) / n_train
+
+plt.plot(features_samples_ratio, acc_clf1, linewidth=2,
+         label="Linear Discriminant Analysis with shrinkage", color='navy')
+plt.plot(features_samples_ratio, acc_clf2, linewidth=2,
+         label="Linear Discriminant Analysis", color='gold')
+
+plt.xlabel('n_features / n_samples')
+plt.ylabel('Classification accuracy')
+
+plt.legend(loc=1, prop={'size': 12})
+plt.title('Linear Discriminant Analysis vs shrinkage Linear Discriminant Analysis (1 discriminative feature)', fontsize=5)
+plt.show()
