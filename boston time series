@@ -1,0 +1,19 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from sklearn.datasets import load_boston
+%matplotlib inline
+
+boston = load_boston()
+# print(boston.data.shape)
+feature = boston.feature_names
+# print(boston.DESCR)
+df = pd.DataFrame(boston.data, columns=feature)
+df
+
+plt.figure(figsize=(5, 5))
+plt.hist(boston.target)
+plt.title('Boston time series')
+plt.xlabel('price')
+plt.ylabel('count')
+plt.show()
