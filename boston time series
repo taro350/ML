@@ -6,10 +6,16 @@ from sklearn.datasets import load_boston
 
 boston = load_boston()
 # print(boston.data.shape)
-feature = boston.feature_names
 # print(boston.DESCR)
-df = pd.DataFrame(boston.data, columns=feature)
-df
+
+feature = boston.feature_names
+b_data = boston.data
+# indices (506, 13)
+value = boston.target
+# indices imply (506, 1) array 1D
+
+df = pd.DataFrame(b_data, columns=feature)
+
 
 plt.figure(figsize=(5, 5))
 plt.hist(boston.target)
