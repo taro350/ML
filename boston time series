@@ -17,3 +17,12 @@ plt.title('Boston time series')
 plt.xlabel('price')
 plt.ylabel('count')
 plt.show()
+
+
+for i, fe in enumerate(feature):
+    plt.figure(figsize=(5, 5))
+    plt.scatter(boston.data[:, i], boston.target)
+    plt.title('Boston time series')
+    plt.xlabel('price')
+    plt.ylabel('count')
+    plt.show()
