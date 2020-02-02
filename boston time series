@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from sklearn.datasets import load_boston
+import seaborn as sea
 %matplotlib inline
 
 boston = load_boston()
@@ -32,3 +33,10 @@ for i, fe in enumerate(feature):
     plt.xlabel('price')
     plt.ylabel('count')
     plt.show()
+
+
+fig, ax = plt.subplots(figsize=(10,10))
+# ax is used for making the plot bigger.
+
+corr = df.corr(method ='pearson')
+sea.heatmap(corr, cmap="YlGnBu", annot=True, linewidth=0.9, ax = ax)
