@@ -4,21 +4,61 @@ from sklearn import tree
 import matplotlib.pyplot as plt
 import seaborn as sea
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+from IPython.display import Image
+import pydotplus
 
 movie_data = pd.read_csv('C:/Users/Owner/Desktop/Python (by Jupyter)\csv/filmtv_movies - ENG.csv')
 movie_data.fillna('')
 
 dm = pd.get_dummies(movie_data, columns = ['genre', 'country'], drop_first= True, dummy_na=True)
 dm_list = dm.columns.tolist()
-
 l = [x for x in dm_list if x.startswith("genre") ]
-l[0]
-# 'genre_Adventure'
 
-X = dm.loc[:, [ l[0], l[1], l[2], l[3], 'duration', 'votes'] ]
-y = dm['avg_vote']
-# X, y split
+movie_data['year'] = movie_data['year'].fillna(0).astype(int)
 
-X_tr, X_te, y_tr, y_tes = train_test_split(X, y, test_size= 0.2, random_state= 0)
-model = tree.DecisionTreeRegressor(max_depth=3)
-model.fit(X_tr, y_tr)
+X = dm.loc[:, ['year', 'duration']]
+y = dm['votes']
+# or use these l[0], l[1], l[2], l[3], 'duration', 'votes'
+
+X_tr, X_tes, y_tr, y_tes = train_test_split(X, y, test_size= 0.2, random_state= 0)
+
+clf = tree.DecisionTreeRegressor(max_depth=3)
+clf.fit(X_tr, y_tr)
+model = clf.predict(X_tes)
+
+mean_squared_error(y_tes, model)
+r2_score(y_tes, model)
+
+tree1 = tree.export_graphviz(clf, out_file=None)
+graph = pydotplus.graph_from_dot_data(tree1)
+Image(graph.create_png())
+
+
+
+
+# plotting
+dur = movie_data.duration
+q1= dur.quantile(.25)
+q2 = dur.quantile(.5)
+q3 = dur.quantile(.75)
+qr= q3 - q1
+print(q1, q2, q3)
+# 89.0 95.0 105.0
+
+
+boundary_low = q1 - 1.5*qr
+boundary_high = q3 + 1.5*qr
+print("%s, %s" % (low, high))
+# 65.0, 129.0
+
+new_dur= dur.loc[(dur > boundary_low ) & (dur < boundary_high)]
+
+plt.figure(figsize=(15, 10))
+plt.title('moive', size=30)
+sea.distplot(new_dur, kde=False)
+plt.xlabel('The number of movies', size=20)
+plt.ylabel('Duration', size=20)
+plt.xticks(np.arange(new_dur.min(), new_dur.max(), step=5))
+plt.show()
+
