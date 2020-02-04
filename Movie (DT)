@@ -9,14 +9,60 @@ from IPython.display import Image
 import pydotplus
 
 movie_data = pd.read_csv('C:/Users/Owner/Desktop/Python (by Jupyter)\csv/filmtv_movies - ENG.csv')
-movie_data.fillna('')
 
-dm = pd.get_dummies(movie_data, columns = ['genre', 'country'], drop_first= True, dummy_na=True)
-dm_list = dm.columns.tolist()
+# Converting categories to numerical data
+# by means of get_dummies()
+dummy = pd.get_dummies(movie_data, columns = ['genre', 'country'], drop_first= True, dummy_na=True)
+dm_list = dummy.columns.tolist()
 l = [x for x in dm_list if x.startswith("genre") ]
 
-movie_data['year'] = movie_data['year'].fillna(0).astype(int)
 
+# The way you deal with NaN
+movie_data['year'] = movie_data['year'].fillna(0).astype(int)
+mean = sum(movie_data['duration']) / len(movie_data['duration'])
+movie_data['duration'] = movie_data['duration'].fillna(mean).astype(int)
+
+
+# How to cope with outliers. (percentile & quantile)
+pt = np.percentile(movie_data.duration, [99])[0]
+# movie_data[(movie_data.duration > pt)]
+movie_data.duration[(movie_data.duration > pt)] = pt
+
+"""
+As described above, you can see we've converted the value of the outliers you've detected into the percentile by following the below:
+or
+you can also use this considerable technique for the outlier that is too small to scale, as can be seen below:
+"""
+
+pt2 = np.percentile(movie_data.year, [1])[0]
+# movie_data[(movie_data.year < pt2)]
+movie_data.year[(movie_data.year < pt2)] = pt2
+
+"""
+Thie tequnique which you can see below is pretty instrucitive as well.
+
+
+duration = movie_data['duration']
+q1= duration.quantile(.25)
+q2 = duration.quantile(.5)
+q3 = duration.quantile(.75)
+qr= q3 - q1
+print(q1, q2, q3)
+>> 89.0 95.0 105.0
+
+boundary_low = q1 - 1.5*qr
+boundary_high = q3 + 1.5*qr
+print("%s, %s" % (boundary_low, boundary_high))
+>> 65.0, 129.0
+
+new_duration = dur.loc[(dur > boundary_low ) & (dur < boundary_high)]
+"""
+
+# plotting
+sea.jointplot(x='duration' , y='year', data=movie_data)
+
+
+# X, y split
 X = dm.loc[:, ['year', 'duration']]
 y = dm['votes']
 # or use these l[0], l[1], l[2], l[3], 'duration', 'votes'
@@ -37,23 +83,11 @@ Image(graph.create_png())
 
 
 
+
+
+
+
 # plotting
-dur = movie_data.duration
-q1= dur.quantile(.25)
-q2 = dur.quantile(.5)
-q3 = dur.quantile(.75)
-qr= q3 - q1
-print(q1, q2, q3)
-# 89.0 95.0 105.0
-
-
-boundary_low = q1 - 1.5*qr
-boundary_high = q3 + 1.5*qr
-print("%s, %s" % (low, high))
-# 65.0, 129.0
-
-new_dur= dur.loc[(dur > boundary_low ) & (dur < boundary_high)]
-
 plt.figure(figsize=(15, 10))
 plt.title('moive', size=30)
 sea.distplot(new_dur, kde=False)
@@ -61,4 +95,3 @@ plt.xlabel('The number of movies', size=20)
 plt.ylabel('Duration', size=20)
 plt.xticks(np.arange(new_dur.min(), new_dur.max(), step=5))
 plt.show()
-
