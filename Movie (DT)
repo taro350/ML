@@ -1,0 +1,24 @@
+import pandas as pd
+import numpy as np
+from sklearn import tree 
+import matplotlib.pyplot as plt
+import seaborn as sea
+from sklearn.model_selection import train_test_split
+
+movie_data = pd.read_csv('C:/Users/Owner/Desktop/Python (by Jupyter)\csv/filmtv_movies - ENG.csv')
+movie_data.fillna('')
+
+dm = pd.get_dummies(movie_data, columns = ['genre', 'country'], drop_first= True, dummy_na=True)
+dm_list = dm.columns.tolist()
+
+l = [x for x in dm_list if x.startswith("genre") ]
+l[0]
+# 'genre_Adventure'
+
+X = dm.loc[:, [ l[0], l[1], l[2], l[3], 'duration', 'votes'] ]
+y = dm['avg_vote']
+# X, y split
+
+X_tr, X_te, y_tr, y_tes = train_test_split(X, y, test_size= 0.2, random_state= 0)
+model = tree.DecisionTreeRegressor(max_depth=3)
+model.fit(X_tr, y_tr)
