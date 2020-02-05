@@ -85,8 +85,6 @@ Image(graph.create_png())
 
 
 
-
-
 # plotting
 plt.figure(figsize=(15, 10))
 plt.title('moive', size=30)
@@ -95,3 +93,39 @@ plt.xlabel('The number of movies', size=20)
 plt.ylabel('Duration', size=20)
 plt.xticks(np.arange(new_dur.min(), new_dur.max(), step=5))
 plt.show()
+
+
+
+
+
+
+# We're going to create 'set' to cut redundant actors.
+movie_data['actors'] = movie_data['actors'].fillna('')
+actor_rows = movie_data.actors
+
+# Convert each row(in which each actor is not seperate) into list that is constitued of every actor individually.
+act_list = []
+for count in range(len(actor_rows)):
+    each_row = movie_data.actors[count]
+    each_row_list = each_row.split(',')
+    act_list.append(each_row_list)
+
+# Strip
+new_act_list = []
+for c in range(len(act_list)):
+    row_list = []
+    for n in range(len(act_list[c])):
+        name = act_list[c][n].strip()
+        row_list.append(name)
+    new_act_list.append(row_list)
+
+# Create Set
+actor_set = set('')
+def create_set(li):
+    for row in range(len(li)):
+        if len(li[row]) < 2:
+            pass
+        else:
+            actor_set.update(x for x in li[row])
+    return actor_set
+create_set(new_act_list)
